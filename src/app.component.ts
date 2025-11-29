@@ -4,34 +4,33 @@ import { FileUploaderComponent } from './components/file-uploader/file-uploader.
 import { ConfigurationComponent } from './components/configuration/configuration.component';
 import { TestResultComponent } from './components/test-result/test-result.component';
 import { CommonModule } from '@angular/common';
-import { DocPage } from './types/test-generation';
 import { GeminiService } from './services/gemini.service';
 import { ConfigService } from './services/config.service';
-import { GithubConfigComponent } from './components/github-config/github-config.component';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, HeaderComponent, FileUploaderComponent, ConfigurationComponent, TestResultComponent, GithubConfigComponent],
+  imports: [CommonModule, HeaderComponent, FileUploaderComponent, ConfigurationComponent, TestResultComponent],
 })
 export class AppComponent {
   private geminiService = inject(GeminiService);
   private configService = inject(ConfigService);
 
-  docPages = signal<DocPage[]>([]);
+  selectedFile = signal<File | null>(null);
   generatedCode = signal<string>('');
   status = signal<'idle' | 'loading' | 'success' | 'error'>('idle');
   errorMessage = signal<string>('');
 
-  onFileParsed(pages: DocPage[]): void {
-    this.docPages.set(pages);
+  onFileSelected(file: File): void {
+    this.selectedFile.set(file);
     this.status.set('idle');
     this.generatedCode.set('');
   }
 
   async handleGenerate(): Promise<void> {
-    if (this.docPages().length === 0) {
+    const file = this.selectedFile();
+    if (!file) {
       this.errorMessage.set('Please upload a document first.');
       this.status.set('error');
       return;
@@ -43,7 +42,7 @@ export class AppComponent {
 
     try {
       const config = this.configService.getConfig();
-      const code = await this.geminiService.generateRobotTest(this.docPages(), config);
+      const code = await this.geminiService.generateRobotTest(file, config);
       this.generatedCode.set(code);
       this.status.set('success');
     } catch (error) {

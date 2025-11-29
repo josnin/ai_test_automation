@@ -1,6 +1,5 @@
-import { Component, ChangeDetectionStrategy, input, signal, computed, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { GithubService } from '../../services/github.service';
 
 @Component({
   selector: 'app-test-result',
@@ -10,11 +9,8 @@ import { GithubService } from '../../services/github.service';
 })
 export class TestResultComponent {
   code = input.required<string>();
-  private githubService = inject(GithubService);
   
   copyButtonText = signal('Copy');
-  uploadStatus = signal<'idle' | 'loading' | 'success' | 'error'>('idle');
-  uploadError = signal<string | null>(null);
 
   formattedCode = computed(() => {
     return this.highlightSyntax(this.code());
@@ -49,19 +45,5 @@ export class TestResultComponent {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  }
-
-  async uploadToGithub(): Promise<void> {
-    this.uploadStatus.set('loading');
-    this.uploadError.set(null);
-    try {
-      await this.githubService.uploadToRepo(this.code());
-      this.uploadStatus.set('success');
-      setTimeout(() => this.uploadStatus.set('idle'), 3000);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'An unknown error occurred.';
-      this.uploadError.set(message);
-      this.uploadStatus.set('error');
-    }
   }
 }

@@ -1,7 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { firstValueFrom, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { firstValueFrom, of, catchError } from 'rxjs';
 import { GithubConfigService } from './github-config.service';
 import { GithubFileContent } from '../types/github';
 
@@ -9,8 +8,9 @@ import { GithubFileContent } from '../types/github';
   providedIn: 'root'
 })
 export class GithubService {
-  private http = inject(HttpClient);
-  private configService = inject(GithubConfigService);
+  // FIX: Add explicit types for injected services to resolve potential type inference issues.
+  private http: HttpClient = inject(HttpClient);
+  private configService: GithubConfigService = inject(GithubConfigService);
   private readonly GITHUB_API_URL = 'https://api.github.com';
 
   private async getFileSha(apiUrl: string, headers: HttpHeaders): Promise<string | null> {

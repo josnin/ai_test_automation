@@ -1,46 +1,82 @@
-import { Injectable } from '@angular/core';
-import { GoogleGenAI, GenerateContentResponse } from '@google/genai';
-import { AppConfig, DocPage } from '../types/test-generation';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { AppConfig } from '../types/test-generation';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GeminiService {
-  // IMPORTANT: The API key must be provided through environment variables.
-  // This application assumes 'process.env.API_KEY' is properly configured
-  // in the deployment environment. Do not hardcode API keys.
-  private ai: GoogleGenAI = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  private http = inject(HttpClient);
 
-  async generateRobotTest(pages: DocPage[], config: AppConfig): Promise<string> {
-    if (!pages || pages.length === 0) {
-      throw new Error('No document pages provided.');
-    }
+  async generateRobotTest(file: File, config: AppConfig): Promise<string> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('config', JSON.stringify(config));
 
-    const modelInstructions = "Generate a Robot Framework test suite based on the following pages and instructions.";
-    
-    const parts = pages.flatMap((page, index) => [
-      { text: `\n--- Page ${index + 1} Instructions ---\n${page.instructions}` },
-      { inlineData: { mimeType: page.mimeType, data: page.image } }
-    ]);
+    // In a real application, you would replace this with your actual backend endpoint.
+    const backendUrl = '/api/generate-test-suite';
 
-    const contents = { parts: [{ text: modelInstructions }, ...parts] };
-    
     try {
-      const response: GenerateContentResponse = await this.ai.models.generateContent({
-        model: config.model,
-        contents: contents,
-        config: {
-          systemInstruction: config.systemPrompt,
-        },
-      });
+      // The following is a placeholder for a real backend API call.
+      // Since we don't have a live backend, we'll simulate the network delay
+      // and return a mock response.
+
+      console.log(`Simulating POST request to ${backendUrl} with file: ${file.name}`);
+      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
+
+      const mockResponse = `*** Settings ***
+Library    SeleniumLibrary
+
+*** Variables ***
+\${BROWSER}    chrome
+\${URL}        http://yourapp.com
+
+*** Test Cases ***
+Login To Application
+    Open Browser To Login Page
+    Input Username    testuser
+    Input Password    password123
+    Click Login Button
+    Verify Dashboard Is Visible
+    [Teardown]    Close Browser
+
+*** Keywords ***
+Open Browser To Login Page
+    Open Browser    \${URL}    \${BROWSER}
+    Maximize Browser Window
+    Title Should Be    Login Page
+
+Input Username
+    [Arguments]    \${username}
+    Input Text    id=username    \${username}
+
+Input Password
+    [Arguments]    \${password}
+    Input Text    id=password    \${password}
+
+Click Login Button
+    Click Button    id=login-button
+
+Verify Dashboard Is Visible
+    Page Should Contain Element    xpath=//h1[contains(text(), 'Welcome, testuser!')]
+`;
+      // In a real implementation, you would use HttpClient to make the request:
+      /*
+      const response = await firstValueFrom(
+        this.http.post(backendUrl, formData, { responseType: 'text' })
+      );
+      return response;
+      */
       
-      const text = response.text.trim();
-      
-      // Clean up the response to ensure it's valid robot framework code
-      return text.replace(/^```robotframework\s*|```$/g, '').trim();
+      return mockResponse;
+
     } catch (error) {
-      console.error('Gemini API Error:', error);
-      throw new Error('The AI model failed to generate a response. Please check your configuration and input.');
+      console.error('Backend API Error:', error);
+      if (error instanceof HttpErrorResponse) {
+        throw new Error(`Backend API request failed: ${error.status} ${error.statusText}.`);
+      }
+      throw new Error('Failed to communicate with the test generation service.');
     }
   }
 }
