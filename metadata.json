@@ -1,0 +1,5 @@
+{
+  "name": "RoboGenius AI",
+  "description": "An AI-powered test automation assistant. Upload a document with webpage screenshots and instructions to automatically generate Robot Framework test suites using Google's Gemini AI.",
+  "requestFramePermissions": []
+}

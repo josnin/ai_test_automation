@@ -1,0 +1,71 @@
+<div class="min-h-screen flex flex-col">
+  <app-header></app-header>
+  <main class="flex-grow container mx-auto p-4 md:p-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      
+      <div class="space-y-8">
+        <app-configuration></app-configuration>
+        <app-file-uploader (fileParsed)="onFileParsed($event)"></app-file-uploader>
+        <app-github-config></app-github-config>
+      </div>
+      
+      <div class="bg-slate-800/50 rounded-lg shadow-lg p-6 flex flex-col min-h-[400px]">
+        <div class="flex-grow flex flex-col items-center justify-center">
+          @if (status() === 'idle') {
+            <div class="text-center text-slate-400">
+              <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <h3 class="mt-2 text-lg font-medium text-slate-300">Test Suite Output</h3>
+              <p class="mt-1 text-sm">Your generated Robot Framework code will appear here.</p>
+              <p class="mt-4 text-sm">Configure settings, upload your document, then click "Generate".</p>
+            </div>
+          }
+
+          @if (status() === 'loading') {
+            <div class="flex flex-col items-center justify-center space-y-4">
+              <svg class="animate-spin h-10 w-10 text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <p class="text-slate-300 text-lg animate-pulse">AI is generating your tests...</p>
+              <p class="text-slate-400 text-sm">This may take a moment.</p>
+            </div>
+          }
+
+          @if (status() === 'success') {
+            <app-test-result [code]="generatedCode()"></app-test-result>
+          }
+          
+          @if (status() === 'error') {
+            <div class="text-center text-red-400 bg-red-900/50 p-4 rounded-lg">
+              <h3 class="font-bold">Generation Failed</h3>
+              <p class="text-sm mt-2">{{ errorMessage() }}</p>
+            </div>
+          }
+        </div>
+        
+        <div class="mt-6 pt-6 border-t border-slate-700">
+          <button 
+            (click)="handleGenerate()"
+            [disabled]="status() === 'loading' || docPages().length === 0"
+            class="w-full inline-flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-slate-900 disabled:bg-slate-500 disabled:cursor-not-allowed transition-colors duration-200">
+            @if (status() === 'loading') {
+              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span>Generating...</span>
+            } @else {
+              <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>Generate Test Suite</span>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
