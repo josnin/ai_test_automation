@@ -52,4 +52,22 @@ export class AppComponent {
       this.status.set('error');
     }
   }
+
+  async handleRefine(modifiedCode: string): Promise<void> {
+    this.status.set('loading');
+    this.errorMessage.set('');
+    // We don't clear the generated code here, so the editor doesn't flicker.
+    
+    try {
+      const config = this.configService.getConfig();
+      const code = await this.geminiService.refineRobotTest(modifiedCode, config);
+      this.generatedCode.set(code);
+      this.status.set('success');
+    } catch (error) {
+      console.error('Error refining test suite:', error);
+      const message = error instanceof Error ? error.message : 'An unknown error occurred.';
+      this.errorMessage.set(`Failed to refine test suite. ${message}`);
+      this.status.set('error');
+    }
+  }
 }

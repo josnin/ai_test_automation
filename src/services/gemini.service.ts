@@ -61,22 +61,39 @@ Click Login Button
 Verify Dashboard Is Visible
     Page Should Contain Element    xpath=//h1[contains(text(), 'Welcome, testuser!')]
 `;
-      // In a real implementation, you would use HttpClient to make the request:
-      /*
-      const response = await firstValueFrom(
-        this.http.post(backendUrl, formData, { responseType: 'text' })
-      );
-      return response;
-      */
-      
       return mockResponse;
-
     } catch (error) {
       console.error('Backend API Error:', error);
       if (error instanceof HttpErrorResponse) {
         throw new Error(`Backend API request failed: ${error.status} ${error.statusText}.`);
       }
       throw new Error('Failed to communicate with the test generation service.');
+    }
+  }
+
+  async refineRobotTest(modifiedCode: string, config: AppConfig): Promise<string> {
+    const payload = {
+      code: modifiedCode,
+      config: config,
+    };
+
+    const backendUrl = '/api/refine-test-suite';
+
+    try {
+      console.log(`Simulating POST request to ${backendUrl} with modified code.`);
+      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
+
+      const refinedResponse = `# --- Refined by AI on ${new Date().toLocaleTimeString()} ---\n` + 
+        modifiedCode.replace(/id=login-button/g, 'css=.login-btn-submit'); // Simulate a change
+      
+      return refinedResponse;
+
+    } catch (error) {
+      console.error('Backend API Error:', error);
+      if (error instanceof HttpErrorResponse) {
+        throw new Error(`Backend API request failed: ${error.status} ${error.statusText}.`);
+      }
+      throw new Error('Failed to communicate with the test refinement service.');
     }
   }
 }

@@ -27,18 +27,18 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              <p class="text-slate-300 text-lg animate-pulse">Processing your document...</p>
+              <p class="text-slate-300 text-lg animate-pulse">AI is working its magic...</p>
               <p class="text-slate-400 text-sm">This may take a moment.</p>
             </div>
           }
 
           @if (status() === 'success') {
-            <app-test-result [code]="generatedCode()"></app-test-result>
+            <app-test-result [code]="generatedCode()" (refineRequest)="handleRefine($event)"></app-test-result>
           }
           
           @if (status() === 'error') {
             <div class="text-center text-red-400 bg-red-900/50 p-4 rounded-lg">
-              <h3 class="font-bold">Generation Failed</h3>
+              <h3 class="font-bold">Operation Failed</h3>
               <p class="text-sm mt-2">{{ errorMessage() }}</p>
             </div>
           }

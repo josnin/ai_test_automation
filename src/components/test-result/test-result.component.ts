@@ -1,31 +1,43 @@
-import { Component, ChangeDetectionStrategy, input, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { CodeEditorComponent } from '../code-editor/code-editor.component';
 
 @Component({
   selector: 'app-test-result',
   templateUrl: './test-result.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [CommonModule, CodeEditorComponent],
 })
 export class TestResultComponent {
   code = input.required<string>();
-  
-  copyButtonText = signal('Copy');
+  refineRequest = output<string>();
 
-  formattedCode = computed(() => {
-    return this.highlightSyntax(this.code());
+  copyButtonText = signal('Copy');
+  editedCode = signal('');
+
+  constructor() {
+    effect(() => {
+      // Sync the local edited code when the input code changes (e.g., after a new generation/refinement)
+      this.editedCode.set(this.code());
+    }, { allowSignalWrites: true });
+  }
+  
+  isCodeDirty = computed(() => {
+    return this.code() !== this.editedCode();
   });
 
-  private highlightSyntax(code: string): string {
-    return code
-      .replace(/(\*\*\* Settings \*\*\*|\*\*\* Variables \*\*\*|\*\*\* Test Cases \*\*\*|\*\*\* Keywords \*\*\*)/g, '<span class="setting">$1</span>')
-      .replace(/^(Library|Resource|Suite Setup|Suite Teardown|Test Setup|Test Teardown|Documentation)/gm, '<span class="keyword">$1</span>')
-      .replace(/(\$\{.*?\})/g, '<span class="variable">$1</span>')
-      .replace(/(^ {4,}[A-Z][a-zA-Z0-9 ]+)/gm, '<span class="task-name">$1</span>');
+  onCodeChange(newCode: string): void {
+    this.editedCode.set(newCode);
+  }
+
+  submitForRefinement(): void {
+    if (this.isCodeDirty()) {
+      this.refineRequest.emit(this.editedCode());
+    }
   }
 
   copyToClipboard(): void {
-    navigator.clipboard.writeText(this.code()).then(() => {
+    navigator.clipboard.writeText(this.editedCode()).then(() => {
       this.copyButtonText.set('Copied!');
       setTimeout(() => this.copyButtonText.set('Copy'), 2000);
     }).catch(err => {
@@ -36,7 +48,7 @@ export class TestResultComponent {
   }
 
   downloadFile(): void {
-    const blob = new Blob([this.code()], { type: 'text/plain;charset=utf-8' });
+    const blob = new Blob([this.editedCode()], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
