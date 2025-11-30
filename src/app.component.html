@@ -1,45 +1,19 @@
-<div class="min-h-screen flex flex-col">
-  <app-header></app-header>
+@if(authService.isAuthenticated()) {
+<div class="relative min-h-screen md:flex bg-slate-950">
+  <!-- Mobile Header -->
+  <app-mobile-header class="md:hidden" (toggleSidebar)="isSidebarOpen.set(!isSidebarOpen())"></app-mobile-header>
 
-  <main class="flex-grow container mx-auto p-4 md:p-8">
-    <div class="border-b border-slate-700 mb-6">
-      <nav class="-mb-px flex space-x-6" aria-label="Tabs">
-        <button 
-          (click)="setView('pages')"
-          [class.text-indigo-400]="activeView() === 'pages'"
-          [class.border-indigo-500]="activeView() === 'pages'"
-          [class.text-slate-400]="activeView() !== 'pages'"
-          [class.border-transparent]="activeView() !== 'pages'"
-          [class.hover:text-slate-300]="activeView() !== 'pages'"
-          [class.hover:border-slate-500]="activeView() !== 'pages'"
-          class="whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors">
-          Test Pages
-        </button>
-        <button 
-          (click)="setView('suites')"
-          [class.text-indigo-400]="activeView() === 'suites'"
-          [class.border-indigo-500]="activeView() === 'suites'"
-          [class.text-slate-400]="activeView() !== 'suites'"
-          [class.border-transparent]="activeView() !== 'suites'"
-          [class.hover:text-slate-300]="activeView() !== 'suites'"
-          [class.hover:border-slate-500]="activeView() !== 'suites'"
-          class="whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors">
-          Test Suites
-        </button>
-        <button 
-          (click)="setView('e2e')"
-          [class.text-indigo-400]="activeView() === 'e2e'"
-          [class.border-indigo-500]="activeView() === 'e2e'"
-          [class.text-slate-400]="activeView() !== 'e2e'"
-          [class.border-transparent]="activeView() !== 'e2e'"
-          [class.hover:text-slate-300]="activeView() !== 'e2e'"
-          [class.hover:border-slate-500]="activeView() !== 'e2e'"
-          class="whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors">
-          E2E Flows
-        </button>
-      </nav>
-    </div>
+  <!-- Sidebar -->
+  <app-sidebar 
+    [activeView]="activeView()"
+    [isOpen]="isSidebarOpen()"
+    (viewChange)="setView($event); isSidebarOpen.set(false)"
+    (logout)="logout()"
+    (close)="isSidebarOpen.set(false)">
+  </app-sidebar>
 
+  <!-- Main content -->
+  <main class="flex-grow p-4 md:p-8 overflow-y-auto">
     @switch (activeView()) {
       @case ('pages') {
         <app-page-list></app-page-list>
@@ -53,3 +27,6 @@
     }
   </main>
 </div>
+} @else {
+  <app-login></app-login>
+}

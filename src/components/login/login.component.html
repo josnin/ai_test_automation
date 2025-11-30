@@ -1,0 +1,73 @@
+<div class="min-h-screen flex flex-col items-center justify-center bg-slate-950 p-4">
+  <div class="w-full max-w-md">
+    <div class="flex justify-center items-center space-x-3 mb-8">
+        <svg class="h-10 w-10 text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.562L16.25 22.25l-.648-1.688a4.5 4.5 0 01-2.324-2.324L11.563 17.5l1.688-.648a4.5 4.5 0 012.324 2.324l.648 1.688z" />
+        </svg>
+        <h1 class="text-3xl font-bold text-white">RoboGenius AI</h1>
+    </div>
+
+    <div class="bg-slate-900 border border-slate-800 rounded-lg shadow-lg p-8">
+        <h2 class="text-xl font-semibold text-center text-white mb-2">Welcome Back</h2>
+        <p class="text-sm text-slate-400 text-center mb-6">Sign in to continue to your workspace.</p>
+
+        <form (submit)="onLogin($event)" class="space-y-6">
+            <div>
+                <label for="username" class="block text-sm font-medium text-slate-300">Username</label>
+                <input 
+                    id="username" 
+                    type="text" 
+                    required 
+                    [value]="username()"
+                    (input)="username.set($any($event.target).value)"
+                    class="mt-1 block w-full bg-slate-800 border-slate-700 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-white"
+                />
+            </div>
+
+            <div>
+                <label for="password" class="block text-sm font-medium text-slate-300">Password</label>
+                <input 
+                    id="password" 
+                    type="password" 
+                    required 
+                    [value]="password()"
+                    (input)="password.set($any($event.target).value)"
+                    class="mt-1 block w-full bg-slate-800 border-slate-700 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-white"
+                />
+            </div>
+            
+            @if (errorMessage()) {
+                <div class="bg-red-900/40 text-red-300 text-sm rounded-md p-3 flex items-center">
+                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                     <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                   </svg>
+                    {{ errorMessage() }}
+                </div>
+            }
+
+            <div>
+                <button 
+                    type="submit" 
+                    [disabled]="isLoading()"
+                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-slate-500 disabled:cursor-not-allowed"
+                >
+                    @if (isLoading()) {
+                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Signing In...
+                    } @else {
+                        Sign In
+                    }
+                </button>
+            </div>
+        </form>
+    </div>
+    <div class="mt-6 text-center text-xs text-slate-500 bg-slate-900/50 border border-slate-800 rounded-md p-3">
+        <p><span class="font-semibold text-slate-400">Test Credentials:</span></p>
+        <p>Username: <span class="text-slate-300">admin</span></p>
+        <p>Password: <span class="text-slate-300">password</span></p>
+    </div>
+  </div>
+</div>

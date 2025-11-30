@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, inject, signal } from '@angular/core';
 import { Page } from '../../types/test-generation';
 import { PageService } from '../../services/page.service';
 import { CodeEditorComponent } from '../code-editor/code-editor.component';
@@ -14,13 +14,10 @@ export class PageItemComponent {
   page = input.required<Page>();
   pageService = inject(PageService);
 
-  onGenerateTest(): void {
-    // This functionality is now handled by the initial creation.
-    // This could be repurposed for a "regenerate" feature in the future.
-    // For now, we find the original image file to re-run. But since we don't have it, we can't.
-    // The simple approach is to re-trigger generation in the service, but the service needs the file.
-    // Let's make this do nothing for now, but keep the button for UI consistency.
-    console.log("Re-generation logic to be implemented.");
+  isExpanded = signal(false);
+
+  toggleExpand(): void {
+    this.isExpanded.update(v => !v);
   }
   
   onDelete(): void {

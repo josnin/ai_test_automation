@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, signal } from '@angular/core';
 import { TestSuite } from '../../types/test-generation';
 
 @Component({
@@ -13,8 +13,16 @@ export class TestSuiteItemComponent {
   delete = output<string>();
   run = output<string>();
 
+  isMenuOpen = signal(false);
+
+  toggleMenu(event: MouseEvent): void {
+    event.stopPropagation();
+    this.isMenuOpen.update(v => !v);
+  }
+
   onDelete(event: MouseEvent): void {
     event.stopPropagation();
+    this.isMenuOpen.set(false);
     if (confirm(`Are you sure you want to delete "${this.suite().name}"?`)) {
       this.delete.emit(this.suite().id);
     }
@@ -22,6 +30,7 @@ export class TestSuiteItemComponent {
 
   onEdit(event: MouseEvent): void {
     event.stopPropagation();
+    this.isMenuOpen.set(false);
     this.edit.emit(this.suite());
   }
 
