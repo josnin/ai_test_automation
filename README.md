@@ -1,20 +1,37 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# RoboGenius AI — Frontend
 
-# Run and deploy your AI Studio app
+RoboGenius AI is a lightweight UI that lets users create automated test cases, group them into test suites, and assemble full end-to-end test flows — all powered by AI-generated test steps from uploaded screenshots and instructions.
 
-This contains everything you need to run your app locally.
+---
 
-View your app in AI Studio: https://ai.studio/apps/drive/165txiPI_76qNfclIabSNxybwrbZowhAH
+## Features
 
-## Run Locally
+### 1. Test Pages
 
-**Prerequisites:**  Node.js
+A **Test Page** represents a single screen or state of the application.
 
+Users can:
+- Add a new Test Page.
+- Upload a screenshot (PNG/JPG).
+- Add instructions or expected behavior.
+- Generate Robot Framework test steps using AI.
+- Review & edit generated steps in the UI.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+### 2. Test Suites
+
+A **Test Suite** is a collection of Test Pages.
+
+Users can:
+- Create a new suite.
+- Add or remove Test Pages from a suite.
+- Define a Base URL for the entire suite.
+
+### 3. End-to-End Flows
+
+An **E2E Flow** combines multiple Test Suites into a full test scenario.
+
+Users can:
+- Create a new E2E flow.
+- Attach one or more Test Suites.
+- Reorder suites to define the execution sequence.
+- Configure delays and retries between suite executions.
